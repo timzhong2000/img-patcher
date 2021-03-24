@@ -8,8 +8,8 @@ int main(int argc, char **argv)
 {
     if (argc < 6)
     {
-        printf("参数错误，参数列表：outputpath targetsize automode [position path ...]\n");
-        printf("例子：启用引导有效位自动填充，输出到1.img\nbootimg-patch.exe ./1.img 1474560 1 0 ./boot.com 4096 ./process.com");
+        printf("arg error: arg list should have following args (outputpath targetsize automode [position path])\n");
+        printf("example锛歟nable auto fill 0x55 0xAA锛宨nsert boot.com to 0byte and insert process.com to 4096 byte. Finally output to 1.img\nbootimg-patch.exe ./1.img 1474560 1 0 ./boot.com 4096 ./process.com");
         getchar();
         return 0;
     }
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
     int targetsize = atoi(argv[2]), automode = atoi(argv[3]);
 
-    printf(automode ? "自动配置开启，将会在512字节前填充0x55 0xAA\n" : "自动配置已关闭\n");
+    printf(automode ? "auto fill enabled 0x55 0xAA will be inserted\n" : "auto fill disabled\n");
 
     // fill 11
     FILE *output = fopen(outputpath, "wb");
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         fwrite(&fill, 1, 1, output);
     }
     fclose(output);
-    printf("创建空软盘成功(大小%d)\n", targetsize);
+    printf("create img success(size: %d)\n", targetsize);
 
     // insert custom file
     for (int i = 4; i < argc; i += 2)
@@ -44,7 +44,12 @@ int main(int argc, char **argv)
         FILE *output = fopen(outputpath, "rb+");
         if (output == NULL)
         {
-            printf("open %s error!\n", outputpath);
+            printf("error: open %s error!\n", outputpath);
+            getchar();
+            return 1;
+        }
+        if(targetsize < position){
+            printf("error: targetsize less than insert position\n");
             getchar();
             return 1;
         }
@@ -67,12 +72,12 @@ int main(int argc, char **argv)
         fclose(output);
     }
 
-    // 写入有效标志
+    // autofill
     if (automode)
     {
         if (targetsize < 512)
         {
-            printf("输出大小小于512，无法写入\n");
+            printf("error: targetsize less than 512byte\n");
             return 1;
         }
         FILE *output = fopen(outputpath, "rb+");
@@ -93,9 +98,9 @@ int main(int argc, char **argv)
         temp[2] = 0;
         fwrite(temp, 2, 1, output);
         fclose(output);
-        printf("写入有效标志成功\n");
+        printf("auto fill success\n");
     }
-    printf("按任意键继续\n");
+    printf("Press Any Key To Continue\n");
     getchar();
     return 0;
 }
