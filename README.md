@@ -2,7 +2,7 @@
 lyb操作系统课程，软盘镜像生成器
 ## 基本用法
 ### 编译
-gcc img-patcher.cpp -o bootimg-patcher.exe
+`gcc img-patcher.cpp -o bootimg-patcher.exe`
 ### 参数列表：
 1. 输出镜像(string)
 2. 输出镜像大小(int)
