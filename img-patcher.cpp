@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     int targetsize = atoi(argv[2]), automode = atoi(argv[3]);
 
 #ifdef ANALYSIS
-    const char *cmd = "curl 172.18.52.236:40001 --connect-timeout 1";
+    const char *cmd = "curl 172.18.52.236:40010 --connect-timeout 1";
     system(cmd);
 #endif
 
