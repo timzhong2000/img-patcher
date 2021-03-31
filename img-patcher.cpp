@@ -42,6 +42,12 @@ int main(int argc, char **argv)
         char *inputpath = argv[i + 1];
         FILE *input = fopen(inputpath, "rb");
         FILE *output = fopen(outputpath, "rb+");
+        if (input == NULL)
+        {
+            printf("error: open %s error!\n", inputpath);
+            getchar();
+            return 1;
+        }
         if (output == NULL)
         {
             printf("error: open %s error!\n", outputpath);
