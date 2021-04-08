@@ -1,8 +1,41 @@
 #include <stdio.h>
+#include <vector>
 #include <stdlib.h>
 #include <string.h>
 #define ANALYSIS
 #define BUFLEN 200
+
+using namespace std;
+
+typedef struct Range
+{
+    int start;
+    int end;
+} Range;
+
+vector<Range> rangeList;
+
+void addRange(int position, int len)
+{
+    Range r;
+    r.start = position;
+    r.end = position + len;
+    rangeList.push_back(r);
+}
+
+void testRange(int position, int len)
+{
+    const int end = position + len;
+    for (auto range : rangeList)
+    {
+        if ((range.start <= position && range.end >= position) || (range.start <= end && range.end >= end))
+        {
+            printf("WARNING: conflict detect! it may cause some unexpected problem!\
+            \nWARNING detail: there are some conflict! %d-%d may cover some code in %d-%d\n",
+                   position, end, range.start, range.end);
+        }
+    }
+}
 
 int main(int argc, char **argv)
 {
@@ -73,12 +106,17 @@ int main(int argc, char **argv)
         }
 
         char buf[BUFLEN + 1];
-        int bufcnt;
+        int bufcnt, count = 0;
         while ((bufcnt = fread(buf, 1, BUFLEN, input)) == BUFLEN)
         {
             fwrite(buf, BUFLEN, 1, output);
+            count += bufcnt;
         }
         fwrite(buf, bufcnt, 1, output);
+        count += bufcnt;
+
+        testRange(position, count);
+        addRange(position, count);
 
         fclose(input);
         fclose(output);
